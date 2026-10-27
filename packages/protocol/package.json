@@ -1,0 +1,18 @@
+{
+  "name": "@sensegap/protocol",
+  "version": "0.1.0",
+  "description": "Wire format between SenseGap collectors and the ingest API.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@sensegap/bots": "workspace:*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tudortotolici/sensegap.git",
+    "directory": "packages/protocol"
+  }
+}

@@ -1,0 +1,10 @@
+packages:
+  - "packages/*"
+  - "collectors/cloudflare"
+
+# Install only package versions published at least 14 days ago.
+minimumReleaseAge: 20160
+
+allowBuilds:
+  esbuild: true
+  workerd: true

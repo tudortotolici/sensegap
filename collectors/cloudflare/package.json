@@ -1,0 +1,25 @@
+{
+  "name": "@sensegap/collector-cf",
+  "version": "0.1.0",
+  "description": "SenseGap collector for sites on Cloudflare: Tail Worker (sites already on Workers) or route Worker (everything else).",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sensegap/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251001.0",
+    "wrangler": "^4.40.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tudortotolici/sensegap.git",
+    "directory": "collectors/cloudflare"
+  }
+}

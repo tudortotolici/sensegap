@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Help with your SenseGap account
+    url: https://support.sensegap.com
+    about: Installing, the dashboard, billing and sign-in.
+  - name: Security problem
+    url: https://github.com/tudortotolici/sensegap/blob/main/SECURITY.md
+    about: Please report security problems privately.

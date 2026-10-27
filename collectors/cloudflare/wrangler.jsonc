@@ -1,0 +1,13 @@
+// Example config. In SenseGap, "Connect Cloudflare" sets this up for you.
+// Run it as a Tail Worker of a site already on Workers (add it to that Worker's "tail_consumers"),
+// or as a route Worker in front of any other site behind Cloudflare (add a "routes" entry).
+// The site key is a secret: `wrangler secret put INGEST_KEY`.
+{
+  "name": "sensegap-collector",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "vars": {
+    "INGEST_URL": "https://ingest.sensegap.com/v1/events"
+  }
+}

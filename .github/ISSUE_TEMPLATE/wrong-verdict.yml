@@ -1,0 +1,31 @@
+name: Wrong verdict
+description: A bot was marked verified, unverified or spoofed when it shouldn't have been.
+title: "Wrong verdict: "
+labels: ["verification"]
+body:
+  - type: input
+    id: bot
+    attributes:
+      label: Bot
+      placeholder: "GPTBot"
+    validations:
+      required: true
+  - type: dropdown
+    id: got
+    attributes:
+      label: Verdict shown
+      options: [verified, unverified, spoofed]
+    validations:
+      required: true
+  - type: textarea
+    id: ua
+    attributes:
+      label: User-agent string
+      render: text
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence shown, and why you think it's wrong
+      description: The first three parts of the IP are usually enough. You don't need to share the full address.
+    validations:
+      required: true

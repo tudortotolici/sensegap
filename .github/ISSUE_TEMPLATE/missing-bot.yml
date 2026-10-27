@@ -1,0 +1,30 @@
+name: Missing bot
+description: A crawler, AI bot or agent that isn't in the directory yet.
+title: "Missing bot: "
+labels: ["missing bot"]
+body:
+  - type: textarea
+    id: ua
+    attributes:
+      label: User-agent string
+      description: Copy it exactly from your logs.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: operator
+    attributes:
+      label: Who runs it
+      placeholder: "Company or project name"
+    validations:
+      required: true
+  - type: input
+    id: docs
+    attributes:
+      label: Documentation, IP ranges or reverse DNS domain
+      placeholder: "https://…"
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: What it seems to do, how often it visits, which pages it reads.

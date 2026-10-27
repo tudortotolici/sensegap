@@ -1,0 +1,54 @@
+{
+  "name": "@sensegap/node",
+  "version": "0.1.0",
+  "description": "SenseGap for Next.js and Node: see which AI bots read your site. Sends only bot requests and visits from AI products; plain human traffic never leaves your server.",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://github.com/tudortotolici/sensegap/tree/main/packages/node",
+  "keywords": [
+    "ai",
+    "bots",
+    "crawlers",
+    "analytics",
+    "nextjs",
+    "express",
+    "gptbot"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js",
+      "require": "./dist/next.cjs"
+    }
+  },
+  "bin": {
+    "sensegap-logs": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build.mjs node",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@sensegap/bots": "workspace:*",
+    "@sensegap/protocol": "workspace:*",
+    "@types/node": "^26.6.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tudortotolici/sensegap.git",
+    "directory": "packages/node"
+  }
+}

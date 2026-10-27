@@ -1,0 +1,19 @@
+{
+  "name": "sensegap-open-source",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@12.15.0",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p collectors/cloudflare --noEmit && tsc -p packages/node --noEmit",
+    "check:live": "node --experimental-strip-types packages/verify/scripts/check-live.ts",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
