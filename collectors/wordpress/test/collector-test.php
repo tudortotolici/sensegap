@@ -5,6 +5,8 @@ define('ABSPATH', __DIR__);
 $GLOBALS['opts'] = [];
 function get_option($n, $d = []) { return $GLOBALS['opts']; }
 function wp_unslash($v) { return $v; }
+function sanitize_text_field($v) { return trim(preg_replace('/[\r\n\t ]+/', ' ', strip_tags((string) $v))); }
+function esc_url_raw($v) { return (string) $v; }
 function wp_parse_url($u, $c = -1) { return parse_url($u, $c); }
 function sensegap_option($n, $d = '') { return isset($GLOBALS['opts'][$n]) ? $GLOBALS['opts'][$n] : $d; }
 require __DIR__ . '/../sensegap/includes/patterns.php';

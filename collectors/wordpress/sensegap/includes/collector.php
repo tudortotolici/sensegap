@@ -29,7 +29,7 @@ function sensegap_is_private($ip) {
 
 function sensegap_header($name) {
     $key = 'HTTP_' . strtoupper(str_replace('-', '_', $name));
-    return isset($_SERVER[$key]) && $_SERVER[$key] !== '' ? wp_unslash($_SERVER[$key]) : null;
+    return isset($_SERVER[$key]) && $_SERVER[$key] !== '' ? sanitize_text_field(wp_unslash($_SERVER[$key])) : null;
 }
 
 /**
@@ -37,7 +37,7 @@ function sensegap_header($name) {
  * through the proxy that sets them; otherwise a fake Googlebot could pass verification.
  */
 function sensegap_client_ip() {
-    $remote = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+    $remote = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
     $mode = sensegap_option('ip_source', 'auto');
     $first = function ($v) { return $v === null ? null : trim(explode(',', $v)[0]); };
 
@@ -91,8 +91,8 @@ function sensegap_capture() {
     if ((defined('DOING_CRON') && DOING_CRON) || (defined('WP_CLI') && WP_CLI)) return;
     if (function_exists('is_user_logged_in') && is_user_logged_in()) return; // people who log in are people
 
-    $uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '/';
-    $host = isset($_SERVER['HTTP_HOST']) ? wp_unslash($_SERVER['HTTP_HOST']) : (string) wp_parse_url(home_url(), PHP_URL_HOST);
+    $uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
+    $host = isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : (string) wp_parse_url(home_url(), PHP_URL_HOST);
     $url = (is_ssl() ? 'https' : 'http') . '://' . $host . $uri;
     $path = (string) wp_parse_url($url, PHP_URL_PATH);
     $ua = sensegap_header('User-Agent');
@@ -108,7 +108,7 @@ function sensegap_capture() {
         $status = http_response_code();
         $event = [
             'ts'             => (int) round($start * 1000),
-            'method'         => isset($_SERVER['REQUEST_METHOD']) ? substr($_SERVER['REQUEST_METHOD'], 0, 16) : 'GET',
+            'method'         => isset($_SERVER['REQUEST_METHOD']) ? substr(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'])), 0, 16) : 'GET',
             'url'            => $url,
             'status'         => is_int($status) ? $status : null,
             'ip'             => $ip,

@@ -14,10 +14,10 @@ add_filter('plugin_action_links_' . plugin_basename(SENSEGAP_FILE), function ($l
 function sensegap_check_key($key) {
     $url = str_replace('/v1/events', '/v1/check', SENSEGAP_INGEST_URL) . '?source=wordpress';
     $res = wp_remote_get($url, ['timeout' => 8, 'headers' => ['Authorization' => 'Bearer ' . $key, 'User-Agent' => 'SenseGap-WordPress/' . SENSEGAP_VERSION]]);
-    if (is_wp_error($res)) return [false, sprintf(__('Could not reach SenseGap: %s', 'sensegap'), $res->get_error_message())];
+    if (is_wp_error($res)) return [false, sprintf(/* translators: %s: the network error message. */ __('Could not reach SenseGap: %s', 'sensegap'), $res->get_error_message())];
     $body = json_decode(wp_remote_retrieve_body($res), true);
     if (wp_remote_retrieve_response_code($res) === 200 && !empty($body['site'])) return [true, $body['site']];
-    return [false, !empty($body['error']) ? $body['error'] : sprintf(__('SenseGap answered %d', 'sensegap'), wp_remote_retrieve_response_code($res))];
+    return [false, !empty($body['error']) ? $body['error'] : sprintf(/* translators: %d: HTTP status code. */ __('SenseGap answered %d', 'sensegap'), wp_remote_retrieve_response_code($res))];
 }
 
 /*
@@ -47,9 +47,14 @@ add_action('admin_post_sensegap_connect', function () {
     exit;
 });
 
-/** Back from sensegap.com: trade the one-time code for a key, then show the settings page without the code in the URL. */
+/**
+ * Back from sensegap.com: trade the one-time code for a key, then show the settings page without the code in the URL.
+ * This request comes from another site, so it can't carry a WordPress nonce. The one-time state stored in step 1
+ * does the same job: it is checked with hash_equals() below and works once.
+ */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended
 add_action('admin_init', function () {
-    if (!isset($_GET['page'], $_GET['sensegap_state']) || $_GET['page'] !== 'sensegap' || !current_user_can('manage_options')) return;
+    if (!isset($_GET['page'], $_GET['sensegap_state']) || sanitize_key($_GET['page']) !== 'sensegap' || !current_user_can('manage_options')) return;
     $uid = get_current_user_id();
     $pending = get_transient('sensegap_connect_' . $uid);
     delete_transient('sensegap_connect_' . $uid);
@@ -70,9 +75,9 @@ add_action('admin_init', function () {
         ]);
         $body = is_wp_error($res) ? null : json_decode(wp_remote_retrieve_body($res), true);
         if (is_wp_error($res)) {
-            $message = sprintf(__('Could not reach SenseGap: %s', 'sensegap'), $res->get_error_message());
+            $message = sprintf(/* translators: %s: the network error message. */ __('Could not reach SenseGap: %s', 'sensegap'), $res->get_error_message());
         } elseif (wp_remote_retrieve_response_code($res) !== 200 || empty($body['key'])) {
-            $message = !empty($body['error']) ? $body['error'] : sprintf(__('SenseGap answered %d', 'sensegap'), wp_remote_retrieve_response_code($res));
+            $message = !empty($body['error']) ? $body['error'] : sprintf(/* translators: %d: HTTP status code. */ __('SenseGap answered %d', 'sensegap'), wp_remote_retrieve_response_code($res));
         } else {
             $o = get_option('sensegap', []);
             $o = is_array($o) ? $o : [];
@@ -87,6 +92,7 @@ add_action('admin_init', function () {
     wp_safe_redirect(admin_url('options-general.php?page=sensegap&sensegap_connected=' . $result));
     exit;
 });
+// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 /** Page caches serve pages without running WordPress, so those visits never reach the plugin. */
 function sensegap_cache_plugins() {
@@ -143,11 +149,11 @@ function sensegap_settings_page() {
         <p><?php esc_html_e('See which AI bots read your site. Only bot requests and visits sent by AI products leave your site; human traffic is filtered out here.', 'sensegap'); ?></p>
 
         <?php if ($notice === 'connected') : ?>
-            <div class="notice notice-success"><p><?php printf(esc_html__('Connected to %s. Bot visits show up in SenseGap within minutes.', 'sensegap'), '<strong>' . esc_html($status ? $status['message'] : '') . '</strong>'); ?></p></div>
+            <div class="notice notice-success"><p><?php printf(/* translators: %s: the site's domain, e.g. example.com. */ esc_html__('Connected to %s. Bot visits show up in SenseGap within minutes.', 'sensegap'), '<strong>' . esc_html($status ? $status['message'] : '') . '</strong>'); ?></p></div>
         <?php elseif ($notice === 'error') : ?>
             <div class="notice notice-error"><p><?php echo !empty($connect_error)
-                ? sprintf(esc_html__('Could not connect: %s', 'sensegap'), esc_html($connect_error))
-                : sprintf(esc_html__('The key did not work: %s', 'sensegap'), esc_html($status ? $status['message'] : '')); ?></p></div>
+                ? sprintf(/* translators: %s: why connecting failed. */ esc_html__('Could not connect: %s', 'sensegap'), esc_html($connect_error))
+                : sprintf(/* translators: %s: why the key was refused. */ esc_html__('The key did not work: %s', 'sensegap'), esc_html($status ? $status['message'] : '')); ?></p></div>
         <?php elseif ($notice === 'cancelled') : ?>
             <div class="notice notice-info"><p><?php esc_html_e('Connection cancelled. Nothing was changed.', 'sensegap'); ?></p></div>
         <?php elseif ($notice === 'saved') : ?>
@@ -156,7 +162,7 @@ function sensegap_settings_page() {
 
         <?php if ($caches) : ?>
             <div class="notice notice-warning"><p><?php printf(
-                esc_html__('This site uses %s. Cached pages are served without running WordPress, so bot visits to them are missed. If the site is on Cloudflare, the Cloudflare install sees every visit.', 'sensegap'),
+                /* translators: %s: names of the page cache plugins found. */ esc_html__('This site uses %s. Cached pages are served without running WordPress, so bot visits to them are missed. If the site is on Cloudflare, the Cloudflare install sees every visit.', 'sensegap'),
                 '<strong>' . esc_html(implode(', ', $caches)) . '</strong>'
             ); ?></p></div>
         <?php endif; ?>
@@ -180,12 +186,12 @@ function sensegap_settings_page() {
                     <th scope="row"><label for="sensegap_key"><?php esc_html_e('Site key', 'sensegap'); ?></label></th>
                     <td>
                         <input name="sensegap_key" id="sensegap_key" type="text" class="regular-text code" autocomplete="off" spellcheck="false" placeholder="sg_live_…" value="<?php echo esc_attr($masked); ?>">
-                        <p class="description"><?php printf(esc_html__('From SenseGap → Install & settings → WordPress. %s', 'sensegap'), '<a href="https://sensegap.com/app" target="_blank" rel="noopener">sensegap.com/app</a>'); ?></p>
+                        <p class="description"><?php printf(/* translators: %s: link to sensegap.com/app. */ esc_html__('From SenseGap → Install & settings → WordPress. %s', 'sensegap'), '<a href="https://sensegap.com/app" target="_blank" rel="noopener">sensegap.com/app</a>'); ?></p>
                         <?php if ($status) : ?>
                             <p><?php echo $status['ok']
-                                ? '<span style="color:#008a20">●</span> ' . sprintf(esc_html__('Connected to %s', 'sensegap'), '<strong>' . esc_html($status['message']) . '</strong>')
+                                ? '<span style="color:#008a20">●</span> ' . sprintf(/* translators: %s: the site's domain, e.g. example.com. */ esc_html__('Connected to %s', 'sensegap'), '<strong>' . esc_html($status['message']) . '</strong>')
                                 : '<span style="color:#d63638">●</span> ' . esc_html($status['message']); ?>
-                                <span class="description"> · <?php printf(esc_html__('checked %s ago', 'sensegap'), esc_html(human_time_diff((int) $status['at']))); ?></span></p>
+                                <span class="description"> · <?php printf(/* translators: %s: how long ago, e.g. 5 mins. */ esc_html__('checked %s ago', 'sensegap'), esc_html(human_time_diff((int) $status['at']))); ?></span></p>
                         <?php endif; ?>
                         <?php if ($key) : ?><label><input type="checkbox" name="sensegap_remove_key" value="1"> <?php esc_html_e('Remove the key (stops sending)', 'sensegap'); ?></label><?php endif; ?>
                     </td>
