@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       SenseGap
- * Plugin URI:        https://sensegap.com
+ * Plugin URI:        https://support.sensegap.com/install/wordpress
  * Description:       See which AI bots read your site: what they read, how often, and which ones are real. Only bot requests and visits from AI products are sent; human traffic never leaves your site.
  * Version:           0.2.0
  * Requires at least: 5.8
