@@ -4,7 +4,7 @@ Tags: ai, bots, crawlers, analytics, gptbot
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -19,7 +19,19 @@ Only bot requests and visits that come from AI products are sent to SenseGap. Pl
 == Installation ==
 
 1. Plugins → Add New → Upload Plugin, choose sensegap-wordpress.zip, then Install and Activate.
-2. Settings → SenseGap: paste your site key from sensegap.com and click Save and check key.
+2. Settings → SenseGap: click Connect to SenseGap, sign in and approve. The site key is set up for you.
+3. Or paste a site key from sensegap.com and click Save and check key.
+
+== External services ==
+
+This plugin sends data to SenseGap (https://sensegap.com), the service that shows you which AI bots visit your site. Nothing is sent until you connect the plugin, either with Connect to SenseGap or by saving a site key.
+
+* When you click Connect to SenseGap, your browser opens sensegap.com with your site's domain, the address of this settings page and your site's time zone. After you approve, the plugin sends a one-time code to sensegap.com and gets a site key back.
+* When you save or connect a key, the plugin asks SenseGap which site the key belongs to.
+* After that, for each request from a bot, or from someone who arrived from an AI product, it sends the address, time, response status, user agent, referrer and IP address. Plain human visits and logged-in users are never sent.
+
+Terms of service: https://sensegap.com/terms
+Privacy policy: https://sensegap.com/privacy
 
 == Frequently Asked Questions ==
 
@@ -30,6 +42,9 @@ Cached pages are served without running WordPress, so the plugin can't see bot v
 No visible delay: the plugin looks at each request after the page is built and sends only bot visits, after the page has been handed to the visitor when your server allows it.
 
 == Changelog ==
+
+= 0.2.0 =
+* Connect to SenseGap: set up the site key in one click.
 
 = 0.1.0 =
 * First release.

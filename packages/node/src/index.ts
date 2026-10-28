@@ -24,15 +24,17 @@ export function senseGap(options: SenseGapOptions = {}, collector: SenseGap = cr
   return function senseGapMiddleware(req: Req, res: ServerResponse, next?: (err?: unknown) => void) {
     const start = Date.now();
     res.once("finish", () => {
+      // Express sets req.ip from its own "trust proxy" setting; without it, behind nginx that's 127.0.0.1.
+      // A private address means a proxy is in front, so the proxy headers are read instead.
+      // A bot can't fake a Googlebot IP with its own X-Forwarded-For: headers count only behind a private proxy.
+      const socket = req.socket.remoteAddress ?? "";
+      const ip = req.ip && !PRIVATE.test(req.ip) ? req.ip : PRIVATE.test(socket) ? null : socket || null;
       collector.record({
         ts: start,
         method: req.method ?? "GET",
         url: absoluteUrl(req),
         headers: req.headers,
-        // Express sets req.ip from its own "trust proxy" setting. Otherwise proxy headers are only
-        // trusted when the connection comes from a private address (a proxy in front of this server),
-        // so a bot can't fake a Googlebot IP with its own X-Forwarded-For.
-        ip: req.ip ?? (PRIVATE.test(req.socket.remoteAddress ?? "") ? null : (req.socket.remoteAddress ?? null)),
+        ip,
         status: res.statusCode,
         ms: Date.now() - start,
         bytes: Number(res.getHeader("content-length")) || null,

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { clientIp, createSenseGap, toEvent } from "../src/core";
 import { withSenseGap } from "../src/next";
+import { senseGap } from "../src/index";
 
 const GPTBOT = "Mozilla/5.0; compatible; GPTBot/1.2; +https://openai.com/gptbot";
 const CHROME = "Mozilla/5.0 (Macintosh) AppleWebKit/537.36 Chrome/141.0 Safari/537.36";
@@ -61,5 +62,27 @@ describe("withSenseGap", () => {
     expect(await proxy(req, { waitUntil: (p) => waits.push(p) })).toBe(redirect);
     await Promise.all(waits);
     expect(JSON.parse((fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].body as string).events[0].status).toBe(308);
+  });
+});
+
+describe("senseGap (Express)", () => {
+  const run = (ip: string | undefined, remote: string, headers: Record<string, string>) => {
+    const record = vi.fn();
+    const listeners: Record<string, () => void> = {};
+    const req = { method: "GET", url: "/a", ip, headers: { host: "x.com", "user-agent": GPTBOT, ...headers }, socket: { remoteAddress: remote } };
+    const res = { statusCode: 200, getHeader: () => undefined, once: (ev: string, fn: () => void) => { listeners[ev] = fn; } };
+    senseGap({}, { record, flush: async () => {}, check: async () => "" })(req as never, res as never, () => {});
+    listeners.finish!();
+    return record.mock.calls[0]![0].ip;
+  };
+
+  it("reads proxy headers when Express sees only the local proxy", () => {
+    expect(run("127.0.0.1", "127.0.0.1", { "x-real-ip": "66.249.66.1" })).toBeNull(); // null → read from headers
+  });
+  it("uses Express's req.ip when it's public", () => {
+    expect(run("66.249.66.1", "10.0.0.2", {})).toBe("66.249.66.1");
+  });
+  it("ignores spoofable headers on a direct connection", () => {
+    expect(run(undefined, "203.0.113.9", { "x-forwarded-for": "66.249.66.1" })).toBe("203.0.113.9");
   });
 });

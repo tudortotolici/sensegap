@@ -3,7 +3,7 @@
  * Plugin Name:       SenseGap
  * Plugin URI:        https://sensegap.com
  * Description:       See which AI bots read your site: what they read, how often, and which ones are real. Only bot requests and visits from AI products are sent; human traffic never leaves your site.
- * Version:           0.1.0
+ * Version:           0.2.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            SenseGap
@@ -15,9 +15,10 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('SENSEGAP_VERSION', '0.1.0');
+define('SENSEGAP_VERSION', '0.2.0');
 define('SENSEGAP_FILE', __FILE__);
 if (!defined('SENSEGAP_INGEST_URL')) define('SENSEGAP_INGEST_URL', 'https://ingest.sensegap.com/v1/events');
+if (!defined('SENSEGAP_APP_URL')) define('SENSEGAP_APP_URL', 'https://sensegap.com');
 
 require_once __DIR__ . '/includes/patterns.php';
 require_once __DIR__ . '/includes/collector.php';

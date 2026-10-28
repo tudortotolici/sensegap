@@ -1,6 +1,6 @@
 {
   "name": "@sensegap/node",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SenseGap for Next.js and Node: see which AI bots read your site. Sends only bot requests and visits from AI products; plain human traffic never leaves your server.",
   "license": "MIT",
   "type": "module",
